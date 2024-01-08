@@ -1,0 +1,48 @@
+{{- $webPort := .Values.service.webPort -}}
+{{- $acePort := .Values.service.acePort -}}
+{{if eq .Values.service.type "ILB" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.name}}
+  namespace: {{.Values.namespace}}
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"
+  labels : 
+    run: {{.Values.name}}
+spec:
+  type: LoadBalancer
+  loadBalancerIP: {{.Values.loadBalancerIP}}
+  ports:
+  - name: {{.Values.name}}-webui
+    port: {{ $webPort }}
+    protocol: TCP
+  {{if $acePort}}
+  - name: {{.Values.name}}-ace
+    port: {{ $acePort }}
+    protocol: TCP
+  {{- end }}
+  selector:
+    run: {{.Values.name}}
+{{- end}}
+{{if eq .Values.service.type "ClusterIP" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.name}}
+  namespace: {{.Values.namespace}}
+spec:
+  ports:
+  - name: {{.Values.name}}-webui
+    port: {{ $webPort }}
+    protocol: TCP
+  {{if $acePort}}
+  - name: {{.Values.name}}-ace
+    port: {{ $acePort }}
+    protocol: TCP
+  {{- end }}
+  selector:
+    run: {{.Values.name}}
+  sessionAffinity: None
+  type: ClusterIP
+{{- end}}

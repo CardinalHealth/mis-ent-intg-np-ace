@@ -1,0 +1,49 @@
+# Default values for mq.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+name:
+namespace:
+version:
+replicaCount:
+
+image:
+  repository:
+  tag:
+  pullPolicy: Always
+envConfigs:
+  CAH_ENV:
+  ACE_SERVER:
+ingress:
+  enable: "false"
+service:
+# service type ILB or ClusterIP
+  type: "ClusterIP"
+  webPort: 7600
+secrets:
+  creds :
+autoscaler:
+  enable: "false"
+  maxReplicas: 3
+  minReplicas: 1
+  averageUtilization: 60
+  averageValue: 1000Mi
+resources:
+  limits:
+    enable: "false"
+    cpu: "500m"
+    memory: 800Mi
+  requests:
+    enable: "false"
+    cpu: "100m"
+    memory: 500Mi
+# Add nfs section to mount file syetem
+nfs:
+  server:
+  path: 
+readinessProbe: 
+  initialDelaySeconds: 60
+  periodSeconds: 10
+livenessProbe: 
+  initialDelaySeconds: 900
+  periodSeconds: 20
+dnsPolicy: ClusterFirst 

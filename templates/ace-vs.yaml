@@ -1,0 +1,33 @@
+{{if eq .Values.ingress.enable "true"}}
+{{- $webPort := .Values.service.webPort -}}
+{{- $acePort := .Values.service.acePort -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{.Values.name}}-vs
+  namespace: {{.Values.namespace}}
+spec:
+  hosts: {{.Values.ingress.hosts}}
+  gateways:
+  - {{.Values.name}}-ig
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: {{ $webPort }}
+        host: {{.Values.name}}
+  {{if $acePort}}  
+  tls:
+  - match:
+    - port: 443
+      sniHosts: {{.Values.ingress.hosts}}
+    route:
+    - destination:
+        host: {{.Values.name}}
+        port:
+          number: {{ $acePort }}
+  {{- end}}
+{{- end}}

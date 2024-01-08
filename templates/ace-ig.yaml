@@ -1,0 +1,23 @@
+{{if eq .Values.ingress.enable "true"}}
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{.Values.name}}-ig
+  namespace: {{.Values.namespace}}
+spec:
+  selector:
+    istio: {{.Values.namespace}}-ingressgateway 
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts: {{.Values.ingress.hosts}}
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: PASSTHROUGH
+    hosts: {{.Values.ingress.hosts}}
+{{- end}}
